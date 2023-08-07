@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"os/exec"
 	"time"
 
 	"github.com/gen2brain/beeep"
@@ -26,6 +27,7 @@ func main() {
 		if found {
 			fmt.Println("Target color found!")
 			displayDesktopNotification("Purple Color Detected", "Purple color was detected on the screen!")
+			playAlarmSound()
 		} else {
 			fmt.Println("Target color not found.")
 		}
@@ -50,5 +52,13 @@ func displayDesktopNotification(title, message string) {
 	err := beeep.Notify(title, message, "")
 	if err != nil {
 		log.Println("Error displaying desktop notification:", err)
+	}
+}
+
+func playAlarmSound() {
+	cmd := exec.Command("aplay", "alarm.wav") // Change "alarm.wav" to your audio file
+	err := cmd.Run()
+	if err != nil {
+		log.Println("Error playing alarm sound:", err)
 	}
 }
