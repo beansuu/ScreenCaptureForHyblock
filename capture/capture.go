@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/color"
 	"log"
 	"time"
@@ -13,7 +14,8 @@ func main() {
 	targetColor := color.RGBA{R: 0x9c, G: 0x27, B: 0xb0, A: 0xff}
 
 	for {
-		img, err := screenshot.CaptureScreen()
+		screenBounds := screenshot.GetDisplayBounds(0)
+		img, err := screenshot.Capture(screenBounds.Min.X, screenBounds.Min.Y, screenBounds.Dx(), screenBounds.Dy())
 		if err != nil {
 			log.Println("Error capturing screenshot:", err)
 			continue
@@ -31,7 +33,7 @@ func main() {
 	}
 }
 
-func isColorFound(img screenshot.Image, targetColor color.Color) bool {
+func isColorFound(img image.Image, targetColor color.Color) bool {
 	bounds := img.Bounds()
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
