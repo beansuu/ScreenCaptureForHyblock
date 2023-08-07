@@ -13,7 +13,8 @@ import (
 )
 
 func main() {
-	targetColor := color.RGBA{R: 0x9c, G: 0x27, B: 0xb0, A: 0xff}
+	purpleColor := color.RGBA{R: 0x9c, G: 0x27, B: 0xb0, A: 0xff}
+	blueColor := color.RGBA{R: 0x11, G: 0x66, B: 0xbb, A: 0xff}
 
 	for {
 		screenBounds := screenshot.GetDisplayBounds(0)
@@ -23,13 +24,14 @@ func main() {
 			continue
 		}
 
-		found := isColorFound(img, targetColor)
-		if found {
-			fmt.Println("Target color found!")
-			displayDesktopNotification("Purple Color Detected", "Purple color was detected on the screen!")
+		foundPurple := isColorFound(img, purpleColor)
+		foundBlue := isColorFound(img, blueColor)
+		if foundPurple || foundBlue {
+			fmt.Println("Color found:", getColorName(foundPurple, foundBlue))
+			displayDesktopNotification("Color Detected", getColorName(foundPurple, foundBlue)+" color was detected on the screen!")
 			playAlarmSound()
 		} else {
-			fmt.Println("Target color not found.")
+			fmt.Println("No target color found.")
 		}
 
 		time.Sleep(5 * time.Second) // Wait for 5 seconds before capturing the next screenshot
@@ -60,5 +62,17 @@ func playAlarmSound() {
 	err := cmd.Run()
 	if err != nil {
 		log.Println("Error playing alarm sound:", err)
+	}
+}
+
+func getColorName(purple, blue bool) string {
+	if purple && blue {
+		return "Purple and Blue"
+	} else if purple {
+		return "Purple"
+	} else if blue {
+		return "Blue"
+	} else {
+		return "Unknown"
 	}
 }
