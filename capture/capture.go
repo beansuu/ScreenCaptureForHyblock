@@ -13,9 +13,8 @@ import (
 )
 
 var (
-	previousPixelCount = 0
-	previousPurpleFound = false
-	previousBlueFound   = false
+	previousPurplePixelCount = 0
+	previousBluePixelCount   = 0
 )
 
 func main() {
@@ -30,33 +29,20 @@ func main() {
 			continue
 		}
 
-		foundPurple := isColorFound(img, purpleColor)
-		foundBlue := isColorFound(img, blueColor)
+		purplePixelCount := getPixelCount(img, purpleColor)
+		bluePixelCount := getPixelCount(img, blueColor)
 
-		if (foundPurple || foundBlue) && (getPixelCount(img, purpleColor) != previousPixelCount || getPixelCount(img, blueColor) != previousPixelCount) {
-			fmt.Println("Color found:", getColorName(foundPurple, foundBlue))
-			displayDesktopNotification("Color Detected", getColorName(foundPurple, foundBlue)+" color was detected on the screen!")
+		if (purplePixelCount > previousPurplePixelCount) || (bluePixelCount > previousBluePixelCount) {
+			fmt.Println("Color found:", getColorName(purplePixelCount > previousPurplePixelCount, bluePixelCount > previousBluePixelCount))
+			displayDesktopNotification("Color Detected", getColorName(purplePixelCount > previousPurplePixelCount, bluePixelCount > previousBluePixelCount)+" color was detected on the screen!")
 			playAlarmSound()
 		}
 
-		previousPixelCount = getPixelCount(img, purpleColor)
-		previousPurpleFound = foundPurple
-		previousBlueFound = foundBlue
+		previousPurplePixelCount = purplePixelCount
+		previousBluePixelCount = bluePixelCount
 
 		time.Sleep(5 * time.Second) // Wait for 5 seconds before capturing the next screenshot
 	}
-}
-
-func isColorFound(img image.Image, targetColor color.Color) bool {
-	bounds := img.Bounds()
-	for x := bounds.Min.X; x < bounds.Max.X; x++ {
-		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			if img.At(x, y) == targetColor {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 func getPixelCount(img image.Image, targetColor color.Color) int {
