@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	previousPixelCount = 0
 	previousPurpleFound = false
 	previousBlueFound   = false
 )
@@ -32,12 +33,13 @@ func main() {
 		foundPurple := isColorFound(img, purpleColor)
 		foundBlue := isColorFound(img, blueColor)
 
-		if (foundPurple && !previousPurpleFound) || (foundBlue && !previousBlueFound) {
+		if (foundPurple || foundBlue) && (getPixelCount(img, purpleColor) != previousPixelCount || getPixelCount(img, blueColor) != previousPixelCount) {
 			fmt.Println("Color found:", getColorName(foundPurple, foundBlue))
 			displayDesktopNotification("Color Detected", getColorName(foundPurple, foundBlue)+" color was detected on the screen!")
 			playAlarmSound()
 		}
 
+		previousPixelCount = getPixelCount(img, purpleColor)
 		previousPurpleFound = foundPurple
 		previousBlueFound = foundBlue
 
@@ -55,6 +57,19 @@ func isColorFound(img image.Image, targetColor color.Color) bool {
 		}
 	}
 	return false
+}
+
+func getPixelCount(img image.Image, targetColor color.Color) int {
+	count := 0
+	bounds := img.Bounds()
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			if img.At(x, y) == targetColor {
+				count++
+			}
+		}
+	}
+	return count
 }
 
 func displayDesktopNotification(title, message string) {
