@@ -12,6 +12,11 @@ import (
 	"github.com/kbinani/screenshot"
 )
 
+var (
+	previousPurpleFound = false
+	previousBlueFound   = false
+)
+
 func main() {
 	purpleColor := color.RGBA{R: 0x9c, G: 0x27, B: 0xb0, A: 0xff}
 	blueColor := color.RGBA{R: 0x11, G: 0x66, B: 0xbb, A: 0xff}
@@ -26,13 +31,15 @@ func main() {
 
 		foundPurple := isColorFound(img, purpleColor)
 		foundBlue := isColorFound(img, blueColor)
-		if foundPurple || foundBlue {
+
+		if (foundPurple && !previousPurpleFound) || (foundBlue && !previousBlueFound) {
 			fmt.Println("Color found:", getColorName(foundPurple, foundBlue))
 			displayDesktopNotification("Color Detected", getColorName(foundPurple, foundBlue)+" color was detected on the screen!")
 			playAlarmSound()
-		} else {
-			fmt.Println("No target color found.")
 		}
+
+		previousPurpleFound = foundPurple
+		previousBlueFound = foundBlue
 
 		time.Sleep(5 * time.Second) // Wait for 5 seconds before capturing the next screenshot
 	}
