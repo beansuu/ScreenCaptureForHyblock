@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"net/smtp"
 	"time"
 
 	"github.com/kbinani/screenshot"
@@ -12,6 +13,11 @@ import (
 
 func main() {
 	targetColor := color.RGBA{R: 0x9c, G: 0x27, B: 0xb0, A: 0xff}
+	emailAddress := "elaroldwolf@hotmail.com"
+	smtpServer := "smtp.office365.com"
+	smtpPort := 587
+	smtpUsername := "elaroldwolf@hotmail.com"
+	smtpPassword := "keerul1ne"
 
 	var previousScreen image.Image
 
@@ -25,7 +31,7 @@ func main() {
 
 		if previousScreen != nil && isColorChange(previousScreen, img, targetColor) {
 			fmt.Println("New purple color detected!")
-			// Trigger a notification here (e.g., send an email, display a message)
+			sendEmailNotification(emailAddress, smtpServer, smtpPort, smtpUsername, smtpPassword)
 		}
 
 		previousScreen = img
@@ -47,4 +53,18 @@ func isColorChange(prevScreen, currentScreen image.Image, targetColor color.Colo
 		}
 	}
 	return false
+}
+
+func sendEmailNotification(emailAddress, smtpServer string, smtpPort int, smtpUsername, smtpPassword string) {
+	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpServer)
+	to := []string{emailAddress}
+	msg := []byte("To: " + emailAddress + "\r\n" +
+		"Subject: Purple Color Detected\r\n" +
+		"\r\n" +
+		"Purple color was detected on the screen!\r\n")
+
+	err := smtp.SendMail(smtpServer+":"+fmt.Sprintf("%d", smtpPort), auth, smtpUsername, to, msg)
+	if err != nil {
+		log.Println("Error sending email:", err)
+	}
 }
