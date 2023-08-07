@@ -19,6 +19,8 @@ func main() {
 	smtpUsername := "elaroldwolf@hotmail.com"
 	smtpPassword := "keerul1ne"
 
+    sendEmailNotification(emailAddress, smtpServer, smtpPort, smtpUsername, smtpPassword)
+
 	var previousScreen image.Image
 
 	for {
@@ -56,14 +58,13 @@ func isColorChange(prevScreen, currentScreen image.Image, targetColor color.Colo
 }
 
 func sendEmailNotification(emailAddress, smtpServer string, smtpPort int, smtpUsername, smtpPassword string) {
-    auth := smtp.LoginAuth(smtpUsername, smtpPassword)
+    auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpServer)
     to := []string{emailAddress}
     msg := []byte("To: " + emailAddress + "\r\n" +
         "Subject: Purple Color Detected\r\n" +
         "\r\n" +
         "Purple color was detected on the screen!\r\n")
 
-    // Use "LOGIN" authentication
     err := smtp.SendMail(smtpServer+":"+fmt.Sprintf("%d", smtpPort), auth, smtpUsername, to, msg)
     if err != nil {
         log.Println("Error sending email:", err)
