@@ -1,3 +1,6 @@
 # ScreenCaptureForHyblock
 
-Screen capture that records pixels on screen and sounds an alarm if something changes.
+Screen capture which detects Liqudation levels whenever they appear on the screen
+
+and sends out an alarm.
+# beansu
